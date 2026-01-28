@@ -4,8 +4,9 @@ app = Flask(__name__)
 
 
 @app.get("/health")
-def health():
-    return jsonify({"status": "broken"}), 200
+def health(  ):              # 多余的空格
+            return jsonify({"status": "ok"}), 200    # 错误的缩进
+
 
 
 @app.get("/hello")
