@@ -4,9 +4,8 @@ app = Flask(__name__)
 
 
 @app.get("/health")
-def health(  ):              
-            return jsonify({"status": "ok"}), 200    
-
+def health():
+    return jsonify({"status": "ok"}), 200
 
 
 @app.get("/hello")
