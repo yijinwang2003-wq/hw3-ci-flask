@@ -11,35 +11,109 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ========================================
+      # TASK 1 & 2: CHECKOUT AND ENVIRONMENT SETUP
+      # ========================================
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Display Python version
+        run: python --version
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip list
 
+      # ========================================
+      # TASK 3: CODE QUALITY CHECKS
+      # ========================================
       - name: Black format check
-        run: black --check .
+        run: |
+          echo "Running Black code formatter check..."
+          black --check . || {
+            echo "❌ Black formatting check failed!"
+            echo "💡 Fix: Run 'black .' to auto-format your code"
+            echo "Files that need formatting:"
+            black --check . --diff
+            exit 1
+          }
+          echo "✅ Black formatting check passed!"
 
       - name: Flake8 lint
-        run: flake8 .
+        run: |
+          echo "Running Flake8 linting..."
+          flake8 . || {
+            echo "❌ Flake8 linting check failed!"
+            echo "💡 Fix the linting errors shown above"
+            echo "💡 Check .flake8 configuration for standards"
+            exit 1
+          }
+          echo "✅ Flake8 linting check passed!"
 
+      # ========================================
+      # TASK 4: TESTING WITH COVERAGE
+      # ========================================
       - name: Run tests with coverage
         run: |
-          pytest --cov=app --cov-fail-under=80 --cov-report=xml --cov-report=html
+          echo "Running pytest with coverage reporting..."
+          pytest --cov=app --cov-report=term --cov-report=html --cov-report=xml --cov-fail-under=80 -v || {
+            echo "❌ Tests failed or coverage below 80%!"
+            echo "💡 Fix failing tests or add more test coverage"
+            exit 1
+          }
+          echo "✅ All tests passed with sufficient coverage!"
 
-      - name: Upload coverage report
+      - name: Upload coverage report (HTML)
         uses: actions/upload-artifact@v4
+        if: always()  # Upload even if tests fail to help with debugging
         with:
           name: coverage-html
-          path: htmlcov
+          path: htmlcov/
+          retention-days: 30
 
-      - name: Build project
+      - name: Upload coverage report (XML)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          retention-days: 30
+
+      # ========================================
+      # TASK 5: BUILD PROCESS
+      # ========================================
+      - name: Compile Python code
         run: |
+          echo "Compiling Python code to verify syntax..."
           python -m py_compile app.py
+          echo "✅ Build successful - Python code compiled without errors!"
+
+      - name: Verify application can start
+        run: |
+          echo "Verifying application can be imported..."
+          python -c "import app; print('✅ Application module loaded successfully')"
+
+      # ========================================
+      # SUMMARY
+      # ========================================
+      - name: Pipeline summary
+        if: success()
+        run: |
+          echo "======================================"
+          echo "✅ CI Pipeline completed successfully!"
+          echo "======================================"
+          echo "✓ Code checkout"
+          echo "✓ Environment setup (Python 3.11)"
+          echo "✓ Dependencies installed"
+          echo "✓ Code formatting (Black)"
+          echo "✓ Code quality (Flake8)"
+          echo "✓ Tests passed with >80% coverage"
+          echo "✓ Build successful"
+          echo "======================================"
