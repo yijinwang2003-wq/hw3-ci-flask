@@ -38,24 +38,24 @@ jobs:
         run: |
           echo "Running Black code formatter check..."
           black --check . || {
-            echo "❌ Black formatting check failed!"
-            echo "💡 Fix: Run 'black .' to auto-format your code"
+            echo "Black formatting check failed!"
+            echo "Fix: Run 'black .' to auto-format your code"
             echo "Files that need formatting:"
             black --check . --diff
             exit 1
           }
-          echo "✅ Black formatting check passed!"
+          echo "Black formatting check passed!"
 
       - name: Flake8 lint
         run: |
           echo "Running Flake8 linting..."
           flake8 . || {
-            echo "❌ Flake8 linting check failed!"
-            echo "💡 Fix the linting errors shown above"
-            echo "💡 Check .flake8 configuration for standards"
+            echo "Flake8 linting check failed!"
+            echo "Fix the linting errors shown above"
+            echo "Check .flake8 configuration for standards"
             exit 1
           }
-          echo "✅ Flake8 linting check passed!"
+          echo "Flake8 linting check passed!"
 
       # ========================================
       # TASK 4: TESTING WITH COVERAGE
@@ -64,11 +64,11 @@ jobs:
         run: |
           echo "Running pytest with coverage reporting..."
           pytest --cov=app --cov-report=term --cov-report=html --cov-report=xml --cov-fail-under=80 -v || {
-            echo "❌ Tests failed or coverage below 80%!"
-            echo "💡 Fix failing tests or add more test coverage"
+            echo "Tests failed or coverage below 80%!"
+            echo "Fix failing tests or add more test coverage"
             exit 1
           }
-          echo "✅ All tests passed with sufficient coverage!"
+          echo "All tests passed with sufficient coverage!"
 
       - name: Upload coverage report (HTML)
         uses: actions/upload-artifact@v4
@@ -93,12 +93,12 @@ jobs:
         run: |
           echo "Compiling Python code to verify syntax..."
           python -m py_compile app.py
-          echo "✅ Build successful - Python code compiled without errors!"
+          echo "Build successful - Python code compiled without errors!"
 
       - name: Verify application can start
         run: |
           echo "Verifying application can be imported..."
-          python -c "import app; print('✅ Application module loaded successfully')"
+          python -c "import app; print('Application module loaded successfully')"
 
       # ========================================
       # SUMMARY
@@ -107,7 +107,7 @@ jobs:
         if: success()
         run: |
           echo "======================================"
-          echo "✅ CI Pipeline completed successfully!"
+          echo "CI Pipeline completed successfully!"
           echo "======================================"
           echo "✓ Code checkout"
           echo "✓ Environment setup (Python 3.11)"
