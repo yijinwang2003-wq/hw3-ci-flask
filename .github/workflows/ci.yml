@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ========================================
-      # TASK 1 & 2: CHECKOUT AND ENVIRONMENT SETUP
-      # ========================================
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -31,9 +28,7 @@ jobs:
           pip install -r requirements.txt
           pip list
 
-      # ========================================
-      # TASK 3: CODE QUALITY CHECKS
-      # ========================================
+    
       - name: Black format check
         run: |
           echo "Running Black code formatter check..."
@@ -57,9 +52,7 @@ jobs:
           }
           echo "Flake8 linting check passed!"
 
-      # ========================================
-      # TASK 4: TESTING WITH COVERAGE
-      # ========================================
+    
       - name: Run tests with coverage
         run: |
           echo "Running pytest with coverage reporting..."
@@ -72,7 +65,7 @@ jobs:
 
       - name: Upload coverage report (HTML)
         uses: actions/upload-artifact@v4
-        if: always()  # Upload even if tests fail to help with debugging
+        if: always()  
         with:
           name: coverage-html
           path: htmlcov/
@@ -86,9 +79,7 @@ jobs:
           path: coverage.xml
           retention-days: 30
 
-      # ========================================
-      # TASK 5: BUILD PROCESS
-      # ========================================
+
       - name: Compile Python code
         run: |
           echo "Compiling Python code to verify syntax..."
@@ -100,20 +91,18 @@ jobs:
           echo "Verifying application can be imported..."
           python -c "import app; print('Application module loaded successfully')"
 
-      # ========================================
-      # SUMMARY
-      # ========================================
+
       - name: Pipeline summary
         if: success()
         run: |
           echo "======================================"
           echo "CI Pipeline completed successfully!"
           echo "======================================"
-          echo "✓ Code checkout"
-          echo "✓ Environment setup (Python 3.11)"
-          echo "✓ Dependencies installed"
-          echo "✓ Code formatting (Black)"
-          echo "✓ Code quality (Flake8)"
-          echo "✓ Tests passed with >80% coverage"
-          echo "✓ Build successful"
+          echo " Code checkout"
+          echo " Environment setup (Python 3.11)"
+          echo " Dependencies installed"
+          echo " Code formatting (Black)"
+          echo " Code quality (Flake8)"
+          echo " Tests passed with >80% coverage"
+          echo " Build successful"
           echo "======================================"
